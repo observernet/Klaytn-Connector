@@ -1,0 +1,16 @@
+# Ignore Directory
+bin/
+conf/
+data/
+lib/
+log/
+shell/
+node/config/
+node/logs/
+node/node_modules/
+
+# Ignore File
+*.bak
+*.o
+*.lis
+Test*.c
