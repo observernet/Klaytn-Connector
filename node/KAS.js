@@ -98,7 +98,7 @@ async function Transfer(req)
 				to: config.contract,
 				input: input,
 				submit: true,
-				feePayer: '0x3542646188d3d0669d62f73bD2E2aC0d1a79d4f5'
+				feePayer: config.feePayerAddress
 			},
 			json: true
 		}

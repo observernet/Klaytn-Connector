@@ -12,4 +12,6 @@ node/node_modules/
 *.bak
 *.o
 *.lis
+ora_*.h
+ora_*.pc
 Test*.c
