@@ -2,7 +2,6 @@
 bin/
 conf/
 data/
-lib/
 log/
 shell/
 node/config/
