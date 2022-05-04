@@ -62,6 +62,7 @@ async function GetBalanceOf(req)
 	}
 	catch (err)
 	{
+		console.log(err)
 		return {success: false, msg: err.message};
 	}
 }

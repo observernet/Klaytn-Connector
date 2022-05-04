@@ -263,17 +263,23 @@ int AllocateThread(int user_offset, KI_REQRES_HEADER* reqHeader, char* rcvbuf)
  */
 int SendErrorMessage(int user_offset, KI_REQRES_HEADER* reqHeader, char success, char* errmsg)
 {
-    char sndbuf[MAX_BUFFER];
+    char sndbuf[MAX_BUFFER], tmpbuf[16];
     KI_REQRES_HEADER* resHeader;
+    char* resBody;
     
     /* 보낼 헤더를 세팅한다 */
     memset(sndbuf, 0x00, MAX_BUFFER);
     memcpy(sndbuf, reqHeader, sizeof(KI_REQRES_HEADER));
     resHeader = (KI_REQRES_HEADER*)sndbuf;
-    sprintf(resHeader->body_length, "%0*d", KI_BODY_LENGTH, 128);
-    
+
     /* 보낼 데이타를 세팅한다 */
-    sprintf(sndbuf + sizeof(KI_REQRES_HEADER), "%c%-127s", success, errmsg);
+    resBody = (char*)(sndbuf + sizeof(KI_REQRES_HEADER));
+    if ( success == 'Y' ) sprintf(resBody, "{\"success\":true,\"msg\":\"%s\"}", errmsg);
+    else                  sprintf(resBody, "{\"success\":false,\"msg\":\"%s\"}", errmsg);
+
+    /* Body Size를 세팅한다 */
+    sprintf(tmpbuf, "%0*ld", KI_BODY_LENGTH, strlen(resBody));
+    memcpy(resHeader->body_length, tmpbuf, KI_BODY_LENGTH);
     
     /* 응답데이타를 전송한다 */
     if ( SendTCP(mdb->user.inquiry_user[user_offset].sockfd, sndbuf, strlen(sndbuf), &timeover) == -1 )
