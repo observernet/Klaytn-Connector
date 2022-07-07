@@ -223,10 +223,11 @@ void* ThreadProcess(void* arg)
                                     /* 데이타를 전송한다 */
                                     if ( SendTCP(mdb->user.response_user[user_offset].sockfd, sndbuf, strlen(sndbuf), &timeover) == -1 )
                                     {
-                                        Log("ThreadProcess(%d): 데이타 전송에 실패하였습니다. errno[%d]\n", errno);
+                                        Log("ThreadProcess(%d): 데이타 전송에 실패하였습니다. errno[%d]\n", thread_num, errno);
                                         RemoveUser(mdb->user.response_user[user_offset].sockfd);
                                         continue;
                                     }
+                                    Log("ThreadProcess(%d): SendData [%ld:%s]\n", thread_num, strlen(sndbuf), sndbuf);
                                 }
                             }
                         }
@@ -265,7 +266,7 @@ int OpenResponseQue(int thread_num, int user_offset)
     char dirpath[256], tmpbuf[16];
 
     int filedate, keydate;
-
+    
     /* 디렉토리를 연다 */
     sprintf(dirpath, "%s/%s/res/", mdb->program_home, DATA_PATH);
     if ( (dir_info = opendir(dirpath)) == NULL )
@@ -278,6 +279,9 @@ int OpenResponseQue(int thread_num, int user_offset)
     /* 새로운 파일이 생성되었는지 체크하고 파일을 연다 */
     while ( (dir_entry = readdir(dir_info)) )
     {
+        /* 확장자가 .que인 파일만 체크한다 */
+        if ( !strstr(dir_entry->d_name, ".que") ) continue;
+
         memcpy(tmpbuf, dir_entry->d_name, 8); tmpbuf[8] = 0; filedate = atoi(tmpbuf);
         if ( filedate >= keydate )
         {
