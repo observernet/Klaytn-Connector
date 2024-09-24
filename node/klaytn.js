@@ -20,6 +20,7 @@ const caver = new Caver(new Caver.providers.HttpProvider(config.url, option));
 
 // Init OBSR
 var OBSR = caver.contract.create(config.abi, config.contract);
+var PhotoReword = caver.contract.create(config.photoappReword.abi, config.photoappReword.contract);
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -58,7 +59,15 @@ async function Transfer(req)
 		var keyring = caver.wallet.keyring.createFromPrivateKey(pkey);
 		caver.wallet.add(keyring);
 		
-		var res = await OBSR.send({from: keyring.address, gas: '0x4bfd20'}, 'transfer', req.recipient, (Math.round(req.amount * Math.pow(10, 8))).toString());
+		var res;
+		if ( req.sender == config.photoappReword.sender )
+		{
+			res = await PhotoReword.send({from: keyring.address, gas: '0x4bfd20'}, 'transfer', req.recipient, (Math.round(req.amount * Math.pow(10, 8))).toString());
+		}
+		else
+		{
+			res = await OBSR.send({from: keyring.address, gas: '0x4bfd20'}, 'transfer', req.recipient, (Math.round(req.amount * Math.pow(10, 8))).toString());
+		}
 		if ( res.status == undefined || res.status == false )
 		{
 			return {success: false, msg: 'Send error: safeTransfer error'};

@@ -18,6 +18,8 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <server_define.h>
 #include <common_memory.h>
@@ -54,8 +56,11 @@ VECTOR* g_process_vector = NULL;
 
 void ProcessCheck();
 int  RunProcess(PROC_LIST*);
-void interrupt(int);
 
+void ProcessCheckNode();
+int  RunProcessNode();
+
+void interrupt(int);
 void SettingProcess();
 
 /*************************************************************************************
@@ -78,6 +83,7 @@ int main(int argc, char** argv)
 	while (1)
 	{
 		ProcessCheck();
+		ProcessCheckNode();
 		sleep(PROCESS_POLLING_TIME);
 	}
 	
@@ -138,6 +144,47 @@ int RunProcess(PROC_LIST* proc)
 	
 	return (0);
 }
+
+
+/**
+ * 노드 프로세스를 체크한다 (파일 정보를 가지고 판단)
+ */
+void ProcessCheckNode()
+{
+	char filename[256];
+	struct stat file_stat;
+	time_t curtime;
+
+	sprintf(filename, "%s/data/event/%08d.NodeAPI.evt", mdb->program_home, intDate());
+	if ( stat(filename, &file_stat) == 0 )
+	{
+		time(&curtime);
+		if ( file_stat.st_mtime - curtime > 10 )
+		{
+			RunProcessNode();
+		}
+	}
+	else
+	{
+		if ( intTime() > 1000 )
+		{
+			RunProcessNode();
+		}
+	}
+}
+
+int RunProcessNode()
+{
+	char buffer[512];
+	
+	sprintf(buffer, "cd %s/node; %s/node/start_NodeAPI.sh &", mdb->program_home, mdb->program_home);
+	system(buffer);
+	
+	Log("RunProcessNode: 실행 [%s]\n", buffer);
+
+	return (0);
+}
+
 
 void interrupt(int sig)
 {

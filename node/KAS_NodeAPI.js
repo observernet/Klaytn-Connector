@@ -68,14 +68,14 @@ const sub_logs = caver.rpc.klay.subscribe("logs", options, (err, evt) =>
 // get block number (For keeping the connection)
 setInterval(() => { caver.rpc.klay.getBlockNumber() }, 30000);
 
-//const sub_blocks = caver.rpc.klay.subscribe("newBlockHeaders", (err, evt) =>
-//{
-//    if ( err )
-//	{
-//		logger.info('newBlockHeaders error [' + err + ']');
-//    }
-//
-//	var blockNumber = caver.utils.hexToNumber(evt.number);
-//
-//	WriteBlockEventFile( {type: 'block', data: {number: blockNumber}} );
-//});
+const sub_blocks = caver.rpc.klay.subscribe("newBlockHeaders", (err, evt) =>
+{
+    if ( err )
+	{
+		logger.info('newBlockHeaders error [' + err + ']');
+    }
+
+	var blockNumber = caver.utils.hexToNumber(evt.number);
+
+	WriteBlockEventFile( {type: 'block', data: {number: blockNumber}} );
+});

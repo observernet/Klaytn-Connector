@@ -167,7 +167,7 @@ void* ThreadProcess(void* arg)
         }
             
         /* time out 세팅 (의미없음) */
-        tv.tv_sec = 0; tv.tv_usec = 10000;
+        tv.tv_sec = 0; tv.tv_usec = 1000;
             
         /* 읽을 데이타가 있는지 체크한다. */
         result = select(FD_SETSIZE, &readfds, (fd_set*)0, (fd_set*)0, &tv);
@@ -194,6 +194,8 @@ void* ThreadProcess(void* arg)
                         thread[thread_num].event_file[i].linenum++;
                         datakey = (long)thread[thread_num].event_file[i].date * 100000000 + (long)thread[thread_num].event_file[i].linenum;
                         
+                        //printf("[%ld][%ld]\n", mdb->user.send_user[user_offset].datakey, datakey);
+
                         /* 요청한 데이타키보다 큰경우만 전송한다 */
                         if ( mdb->user.send_user[user_offset].datakey < datakey )
                         {

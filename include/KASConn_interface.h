@@ -90,9 +90,13 @@ typedef struct
 //  - success: true or false
 //  - msg: 성공시 transactionHash, 실패시 에러메세지
 
-
 /* Safe Trasnfer (Transact) */
 #define KI_TRID_SAFETRANSFER			'S'
+
+/* Rework Contract (Transact) */
+//#define KI_TRID_WRITE_RPINFO			'R'
+//#define KI_TRID_REWORD_TRANSFER			'W'
+
 
 
 /* Node Event */
